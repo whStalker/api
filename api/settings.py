@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'med_card',
     'rest_framework',
     'rest_framework.authtoken',
-    'dj_rest_auth',
 ]
 
 MIDDLEWARE = [
