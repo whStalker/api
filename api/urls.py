@@ -6,12 +6,16 @@ from rest_framework.routers import DefaultRouter
 
 from med_card import views
 
-diagnos = DefaultRouter()
-diagnos.register(r"diagnos", views.DiagnoseViewSet, basename="diagnos")
+router = DefaultRouter()
+# router.register(r"diagnos", views.DiagnoseViewSet, basename="diagnos"),
+router.register(r"users", views.PatientViewSet, basename="user")
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include(diagnos.urls)),
-    path('login/', obtain_auth_token, name="api_token")
+    path("", include(router.urls)),
+    path('login/', obtain_auth_token, name="api_token"),
+    path('diagnos/', views.DiagnoseViewSet.as_view({'get': 'list'}), name="all-diagnos"),
+    path('diagnos/create/', views.DiagnoseViewSet.as_view({'post': 'create'}), name='diagnos-create'),
+    path('me/', views.UserDetailView.as_view(), name="about-user"),
 ]

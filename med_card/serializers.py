@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 from rest_framework.response import Response
+from med_card.models import Diagnos, MedUser
 
-from .models import Diagnos
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -19,6 +19,12 @@ class LoginSerializer(serializers.Serializer):
 
         self.validated_data['user'] = user
         return attrs
+
+
+class MedUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MedUser
+        fields = "__all__"
 
 
 class DiagnosSerializer(serializers.ModelSerializer):
