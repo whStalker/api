@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 
 from rest_framework import viewsets
@@ -14,7 +16,9 @@ from .models import Diagnos, MedUser, MedRole, User
 
 
 class AuthUser(ObtainAuthToken):
-    # ebal rot
+    permission_classes = []
+    authentication_classes = []
+
     def post(self, request, *args, **kwargs):
         username, password = request.data.get("username"), request.data.get("password")
 
@@ -27,7 +31,15 @@ class AuthUser(ObtainAuthToken):
 
 
         if (user and user.check_password(password)) or (med_user and med_user.check_password(password)):
-            token, created = Token.objects.get_or_create(user=user or med_user)
+            if med_user:
+                token, _ = Token.objects.get_or_create(user=med_user)
+                med_user.last_login = datetime.now()
+                med_user.save()
+            else:
+                token, _ = Token.objects.get_or_create(user=user)
+                user.last_login = datetime.now()
+                user.save()
+
             return Response({'token': token.key})
         else:
             msg = 'Unable to log in with provided credentials.'
@@ -54,9 +66,10 @@ class PatientViewSet(viewsets.ModelViewSet):
 
 
 class UserDetailView(generics.RetrieveAPIView):
-    # queryset = MedUser.objects.all()
+    queryset = MedUser.objects.all()
     serializer_class = MedUserSerializer
     permission_classes = (IsAuthenticated,)
-
-    def get_object(self):
-        return self.request.user
+    
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(instance=MedUser.objects.filter(user_ptr=request.user.id).first())
+        return Response(serializer.data)

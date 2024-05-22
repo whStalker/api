@@ -30,6 +30,7 @@ class Diagnos(models.Model):
     doctor = models.ForeignKey(verbose_name="Имя доктора", to=MedUser, on_delete=models.DO_NOTHING, related_name="diagnos_doctor")
     title = models.CharField('Название болезни', max_length=128)
     description = models.TextField('Описание болезни')
+    created_at = models.CharField('Дата и время', max_length=128)
 
     def __str__(self):
         return self.title
